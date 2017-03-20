@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Angular Js AutoComplete</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+	
+.ul-style{
+	list-style: none;
+	background:#ccc;
+	width:173px;
+	margin-top:0px;
+	padding: 0px;
+}
+
+.ul-style li{
+	padding:10px 0px 10px 5px;
+	text-align: left;
+}
+
+ul li:hover{
+	background: #eeecec;
+	cursor: pointer;
+}
+
+ul li:active {
+	background: #eeecec;
+	cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron">
+    <h1>Angular Js Auto Complete</h1>      
+    <div ng-app="app">
+
+<div ng-controller="MainCtrl">
+	<div class="form-group">
+ 	<input type="text" class="form-control" ng-model="searchTerm" ng-change="search()" ng-keydown="checkKeyDown($event)">
+ 	<ul class="ul-style">
+ 		<li ng-repeat="suggestion in suggestions track by $index" ng-class="{active : selectedIndex === $index}"  ng-click="assignValue($index)">{{suggestion}}</li>
+ 	</ul>
+ 	</div>
+</div>
+
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script type="text/javascript">
+	var app = angular.module('app',[]);
+
+	app.controller('MainCtrl', ['$scope', function($scope){
+			
+			$scope.searchTerm = '';
+			$scope.list = [
+				"india",
+				"pakistan",
+				"USA",
+				"japan",
+				"china",
+				"australiya",
+				"bangladesh",
+				"srilanka",
+				"tibet",
+				"butan",
+				"k"
+			];
+
+			$scope.list.sort();
+
+			$scope.suggestions = [];
+			$scope.selectedIndex = -1;
+
+			$scope.search = function(){
+				$scope.suggestions = [];
+				var maxlength = 0;
+				if($scope.searchTerm == ''){
+					$scope.suggestions = [];
+					return;
+				}
+
+				for(var i=0; i<$scope.list.length; i++){
+					var itemsLowercase = angular.lowercase($scope.list[i]);
+					var searchTermLowercase = angular.lowercase($scope.searchTerm);
+
+					if(itemsLowercase.indexOf(searchTermLowercase) !== -1){
+
+						$scope.suggestions.push(itemsLowercase);
+						maxlength +=1;
+
+						if(maxlength == 5){
+							break;
+						}
+					}
+				}
+			}
+
+			$scope.$watch('selectedIndex', function(val){
+					if(val !== -1){
+						$scope.searchTerm = $scope.suggestions[$scope.selectedIndex];
+					}
+			});
+
+			$scope.assignValue =function(index){
+					$scope.searchTerm = $scope.suggestions[index];
+					$scope.suggestions = [];
+			}
+
+			$scope.checkKeyDown = function(event){
+				console.log(event);
+				if(event.keyCode == 40){
+					event.preventDefault();
+					if($scope.selectedIndex+1 !== $scope.suggestions.length){
+						$scope.selectedIndex++;
+					}
+				}else if(event.keyCode == 38){
+					event.preventDefault();
+					if($scope.selectedIndex-1 !== -1){
+						$scope.selectedIndex--;
+					}
+				}else if(event.keyCode == 13){
+					event.preventDefault();
+					$scope.suggestions = [];
+				}
+			}
+
+
+	}]);
+
+
+</script>
+</body>
+</html>
+
+
+
